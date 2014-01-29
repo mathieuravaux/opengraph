@@ -65,5 +65,11 @@ describe OpenGraph::Object do
       subject['type'] = nil
       subject.should_not be_valid
     end
+
+    it 'should have multiple images' do
+      subject['image'].should == "http://images.rottentomatoes.com/images/movie/custom/00/1217702.jpg"
+      subject['images'].length.should == 3
+    end
+
   end
 end

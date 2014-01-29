@@ -20,7 +20,13 @@ module OpenGraph
     page = OpenGraph::Object.new
     doc.css('meta').each do |m|
       if m.attribute('property') && m.attribute('property').to_s.match(/^og:(.+)$/i)
-        page[$1.gsub('-','_')] = m.attribute('content').to_s
+        val = m.attribute('content').to_s
+        key = $1.gsub('-','_')
+        page[key] = val
+        if OpenGraph::Object::MULTIPLE_ATTRIBUTES.include?(key)
+          page["#{key}s"] ||= []
+          page["#{key}s"] << val if page["#{key}s"].is_a?(Array)
+        end
       end
     end
     return false if page.keys.empty?
@@ -43,6 +49,7 @@ module OpenGraph
   # all detected Open Graph attributes.
   class Object < Hashie::Mash
     MANDATORY_ATTRIBUTES = %w(title type image url)
+    MULTIPLE_ATTRIBUTES = %w(image video)
     
     # The object type.
     def type
